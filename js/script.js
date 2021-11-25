@@ -27,12 +27,13 @@ function startGame() {
     const bombsAmount=16;
     // l'h2 aggiungo hidden e alla griglia levo hidden
     const introText = document.getElementById('intro-text');
+
     introText.classList.add('hidden');
 
     const mainGrid = document.getElementById('grid');
     mainGrid.classList.remove('hidden');
     mainGrid.innerHTML = '';
-
+    document.getElementById('final-message').classList.add('hidden');
     // Verifico e memorizzo cosa ha scelto l'utente
     const levelSelect = parseInt( document.getElementById('select-level').value );
     let maxGridNumber;
@@ -79,20 +80,58 @@ function startGame() {
         
         if (bombsArray.includes(clickedNumber)) {
             this.classList.add('bomb');
+            endGame('lose');
 
      
         } else {
             // la cella diventa azzurra e non più cliccabile
             this.classList.add('clicked');
+            // metodo pirncipale per togliere il click
             this.style.pointerEvents = "none";
-            // il numero selezionato lo aggiungiao all'array non bombe
+            // alternativa
+            // this.removeEventListener('click,handleCellClick');
+
+            // il numero selezionato lo aggiungo all'array che contiene i numeri non bombe azzeccati
             rightAttempsArray.push(clickedNumber);
             console.log(rightAttempsArray)
+           
+            // se la lunghezza dell'array dei numeri azzeccati >= numero max di tentativi: gioco finito
+            if(rightAttempsArray.lenght >= maxAttemps){
+                endGame('win')
+
+            }
+
+        }
+    }
+
+
+    // gestisce il finale del gioco
+    // winOrLose --> stringa, 'win se l'utente ha vinto altrimenti 'lose se l'utente ha perso
+    function endGame(winOrLose) {
+        let finalMessage;
+        if (winOrLose === 'win') {
+        //    se hai vinto mostro messaggio
+        } else {
+            // se hai perso mostro messaggio 
+            // hai azzeccato [lunghezza array azzeccati] tentativi
+            finalMessage = 'Hai perso, hai azzeccato ' + rightAttempsArray.length + 'tentativi';
+        }
+        
+        // Mostro il messaggio finale alla fine della pagina
+        const finalMessageContainer = document.getElementById('final-message');
+        finalMessageContainer.innerHTML = finalMessage;
+        finalMessageContainer.classList.remove('hidden');
+
+        // Rendo tutte le celle non più cliccabili
+        const allCells = document.getElementsByClassName('square');
+        for(let i =0; i < allCells.length; i++) {
+            const thisCell = allCells[i];
+            thisCell.style.pointerEvents = 'none';
+
         }
     }
 
 }
-
 
 // genera array bombe da 1 a x
 // maxRangeNumber --> numero massimo range bombe
